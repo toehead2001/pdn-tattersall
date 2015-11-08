@@ -160,8 +160,8 @@ namespace TattersallEffect
 
             Rectangle selection = EnvironmentParameters.GetSelection(srcArgs.Bounds).GetBoundsInt();
 
-            Bitmap ginghamBitmap = new Bitmap(selection.Width, selection.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Graphics g = Graphics.FromImage(ginghamBitmap);
+            Bitmap tattersallBitmap = new Bitmap(selection.Width, selection.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            Graphics g = Graphics.FromImage(tattersallBitmap);
 
             // Fill with white
             Rectangle backgroundRect = new Rectangle(0, 0, selection.Width, selection.Height);
@@ -205,8 +205,11 @@ namespace TattersallEffect
 
             // Set pen styles.
             Pen pen1 = new Pen(brush1, Amount1);
+            brush1.Dispose();
             Pen pen2 = new Pen(brush2, Amount1);
+            brush2.Dispose();
             Pen pen3 = new Pen(brush3, Amount1);
+            brush3.Dispose();
 
             // Calculate the number of lines will fit in the selection
             int xLoops = (int)Math.Ceiling((double)selection.Height / ((Amount1 + Amount2) * 3));
@@ -262,7 +265,12 @@ namespace TattersallEffect
                 g.DrawLine(pen3, point5, point6);
             }
 
-            tattersallSurface = Surface.CopyFromBitmap(ginghamBitmap);
+            pen1.Dispose();
+            pen2.Dispose();
+            pen3.Dispose();
+
+            tattersallSurface = Surface.CopyFromBitmap(tattersallBitmap);
+            tattersallBitmap.Dispose();
         }
 
         protected override unsafe void OnRender(Rectangle[] rois, int startIndex, int length)
