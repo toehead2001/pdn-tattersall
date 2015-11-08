@@ -126,13 +126,13 @@ namespace TattersallEffect
 
             configUI.SetPropertyControlValue(PropertyNames.Amount1, ControlInfoPropertyNames.DisplayName, "Line Width");
             configUI.SetPropertyControlValue(PropertyNames.Amount2, ControlInfoPropertyNames.DisplayName, "Line Spacing");
-            configUI.SetPropertyControlValue(PropertyNames.Amount3, ControlInfoPropertyNames.DisplayName, "Line Pattern");
+            configUI.SetPropertyControlValue(PropertyNames.Amount3, ControlInfoPropertyNames.DisplayName, "Line Style");
             PropertyControlInfo Amount3Control = configUI.FindControlForPropertyName(PropertyNames.Amount3);
             Amount3Control.SetValueDisplayName(Amount3Options.Amount3Option1, "Solid - 33% Opacity");
             Amount3Control.SetValueDisplayName(Amount3Options.Amount3Option2, "Solid - 66% Opacity");
-            Amount3Control.SetValueDisplayName(Amount3Options.Amount3Option3, "Diagonal Lines Up");
-            Amount3Control.SetValueDisplayName(Amount3Options.Amount3Option4, "Diagonal Lines Down");
-            Amount3Control.SetValueDisplayName(Amount3Options.Amount3Option5, "50/50 Dots");
+            Amount3Control.SetValueDisplayName(Amount3Options.Amount3Option3, "Diagonal Lines - Up");
+            Amount3Control.SetValueDisplayName(Amount3Options.Amount3Option4, "Diagonal Lines - Down");
+            Amount3Control.SetValueDisplayName(Amount3Options.Amount3Option5, "Dots - 50/50");
             configUI.SetPropertyControlValue(PropertyNames.Amount4, ControlInfoPropertyNames.DisplayName, "Line Color 1");
             configUI.SetPropertyControlType(PropertyNames.Amount4, PropertyControlType.ColorWheel);
             configUI.SetPropertyControlValue(PropertyNames.Amount5, ControlInfoPropertyNames.DisplayName, "Line Color 2");
