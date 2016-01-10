@@ -155,17 +155,16 @@ namespace TattersallEffect
             Amount6 = ColorBgra.FromOpaqueInt32(newToken.GetProperty<Int32Property>(PropertyNames.Amount6).Value);
             Amount7 = ColorBgra.FromOpaqueInt32(newToken.GetProperty<Int32Property>(PropertyNames.Amount7).Value);
 
-            base.OnSetRenderInfo(newToken, dstArgs, srcArgs);
-
 
             Rectangle selection = EnvironmentParameters.GetSelection(srcArgs.Bounds).GetBoundsInt();
 
             Bitmap tattersallBitmap = new Bitmap(selection.Width, selection.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-            Graphics g = Graphics.FromImage(tattersallBitmap);
+            Graphics tattersallGraphics = Graphics.FromImage(tattersallBitmap);
 
             // Fill with white
             Rectangle backgroundRect = new Rectangle(0, 0, selection.Width, selection.Height);
-            g.FillRectangle(new SolidBrush(Amount7), backgroundRect);
+            using (SolidBrush backColor = new SolidBrush(Amount7))
+                tattersallGraphics.FillRectangle(backColor, backgroundRect);
 
             // Set Brush Styles
             Brush brush1, brush2, brush3;
@@ -223,23 +222,24 @@ namespace TattersallEffect
                 Point point2 = new Point(selection.Width, Amount1 / 2 + (Amount1 + Amount2) * i * 3);
 
                 // Draw line to screen.
-                g.DrawLine(pen1, point1, point2);
+                tattersallGraphics.DrawLine(pen1, point1, point2);
 
                 // Create points that define line.
                 Point point3 = new Point(0, Amount1 / 2 + (Amount1 + Amount2) * i * 3 + (Amount1 + Amount2));
                 Point point4 = new Point(selection.Width, Amount1 / 2 + (Amount1 + Amount2) * i * 3 + (Amount1 + Amount2));
 
                 // Draw line to screen.
-                g.DrawLine(pen2, point3, point4);
+                tattersallGraphics.DrawLine(pen2, point3, point4);
 
                 // Create points that define line.
                 Point point5 = new Point(0, Amount1 / 2 + (Amount1 + Amount2) * i * 3 + (Amount1 + Amount2) * 2);
                 Point point6 = new Point(selection.Width, Amount1 / 2 + (Amount1 + Amount2) * i * 3 + (Amount1 + Amount2) * 2);
 
                 // Draw line to screen.
-                g.DrawLine(pen3, point5, point6);
+                tattersallGraphics.DrawLine(pen3, point5, point6);
 
             }
+
             // Draw Vertical Lines
             for (int i = 0; i < yLoops; i++)
             {
@@ -248,21 +248,21 @@ namespace TattersallEffect
                 Point point2 = new Point(Amount1 / 2 + (Amount1 + Amount2) * i * 3, selection.Height);
 
                 // Draw line to screen.
-                g.DrawLine(pen1, point1, point2);
+                tattersallGraphics.DrawLine(pen1, point1, point2);
 
                 // Create points that define line.
                 Point point3 = new Point(Amount1 / 2 + (Amount1 + Amount2) * i * 3 + (Amount1 + Amount2), 0);
                 Point point4 = new Point(Amount1 / 2 + (Amount1 + Amount2) * i * 3 + (Amount1 + Amount2), selection.Height);
 
                 // Draw line to screen.
-                g.DrawLine(pen2, point3, point4);
+                tattersallGraphics.DrawLine(pen2, point3, point4);
 
                 // Create points that define line.
                 Point point5 = new Point(Amount1 / 2 + (Amount1 + Amount2) * i * 3 + (Amount1 + Amount2) * 2, 0);
                 Point point6 = new Point(Amount1 / 2 + (Amount1 + Amount2) * i * 3 + (Amount1 + Amount2) * 2, selection.Height);
 
                 // Draw line to screen.
-                g.DrawLine(pen3, point5, point6);
+                tattersallGraphics.DrawLine(pen3, point5, point6);
             }
 
             pen1.Dispose();
@@ -271,14 +271,17 @@ namespace TattersallEffect
 
             tattersallSurface = Surface.CopyFromBitmap(tattersallBitmap);
             tattersallBitmap.Dispose();
+
+
+            base.OnSetRenderInfo(newToken, dstArgs, srcArgs);
         }
 
-        protected override unsafe void OnRender(Rectangle[] rois, int startIndex, int length)
+        protected override void OnRender(Rectangle[] renderRects, int startIndex, int length)
         {
             if (length == 0) return;
             for (int i = startIndex; i < startIndex + length; ++i)
             {
-                Render(DstArgs.Surface, SrcArgs.Surface, rois[i]);
+                Render(DstArgs.Surface, SrcArgs.Surface, renderRects[i]);
             }
         }
 
@@ -293,7 +296,7 @@ namespace TattersallEffect
         ColorBgra Amount7 = ColorBgra.FromBgr(0, 0, 0); // Background Color
         #endregion
 
-        private Surface tattersallSurface;
+        Surface tattersallSurface;
 
         void Render(Surface dst, Surface src, Rectangle rect)
         {
