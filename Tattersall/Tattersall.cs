@@ -12,79 +12,24 @@ namespace TattersallEffect
 {
     public class PluginSupportInfo : IPluginSupportInfo
     {
-        public string Author
-        {
-            get
-            {
-                return ((AssemblyCopyrightAttribute)base.GetType().Assembly.GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0]).Copyright;
-            }
-        }
-        public string Copyright
-        {
-            get
-            {
-                return ((AssemblyDescriptionAttribute)base.GetType().Assembly.GetCustomAttributes(typeof(AssemblyDescriptionAttribute), false)[0]).Description;
-            }
-        }
-
-        public string DisplayName
-        {
-            get
-            {
-                return ((AssemblyProductAttribute)base.GetType().Assembly.GetCustomAttributes(typeof(AssemblyProductAttribute), false)[0]).Product;
-            }
-        }
-
-        public Version Version
-        {
-            get
-            {
-                return base.GetType().Assembly.GetName().Version;
-            }
-        }
-
-        public Uri WebsiteUri
-        {
-            get
-            {
-                return new Uri("http://www.getpaint.net/redirect/plugins.html");
-            }
-        }
+        public string Author => base.GetType().Assembly.GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright;
+        public string Copyright => base.GetType().Assembly.GetCustomAttribute<AssemblyDescriptionAttribute>().Description;
+        public string DisplayName => base.GetType().Assembly.GetCustomAttribute<AssemblyProductAttribute>().Product;
+        public Version Version => base.GetType().Assembly.GetName().Version;
+        public Uri WebsiteUri => new Uri("https://forums.getpaint.net/index.php?showtopic=32376");
     }
 
     [PluginSupportInfo(typeof(PluginSupportInfo), DisplayName = "Tattersall")]
     public class TattersallEffectPlugin : PropertyBasedEffect
     {
-        public static string StaticName
-        {
-            get
-            {
-                return "Tattersall";
-            }
-        }
-
-        public static Image StaticIcon
-        {
-            get
-            {
-                return new Bitmap(typeof(TattersallEffectPlugin), "Tattersall.png");
-            }
-        }
-
-        public static string SubmenuName
-        {
-            get
-            {
-                return SubmenuNames.Render;  // Programmer's chosen default
-            }
-        }
+        private static readonly Image StaticIcon = new Bitmap(typeof(TattersallEffectPlugin), "Tattersall.png");
 
         public TattersallEffectPlugin()
-            : base(StaticName, StaticIcon, SubmenuName, EffectFlags.Configurable)
+            : base("Tattersall", StaticIcon, SubmenuNames.Render, EffectFlags.Configurable)
         {
         }
 
-        public enum PropertyNames
+        private enum PropertyNames
         {
             Amount1,
             Amount2,
@@ -95,7 +40,7 @@ namespace TattersallEffect
             Amount7
         }
 
-        public enum Amount3Options
+        private enum Amount3Options
         {
             Amount3Option1,
             Amount3Option2,
@@ -104,18 +49,18 @@ namespace TattersallEffect
             Amount3Option5
         }
 
-
         protected override PropertyCollection OnCreatePropertyCollection()
         {
-            List<Property> props = new List<Property>();
-
-            props.Add(new Int32Property(PropertyNames.Amount1, 4, 1, 100));
-            props.Add(new Int32Property(PropertyNames.Amount2, 16, 1, 100));
-            props.Add(StaticListChoiceProperty.CreateForEnum<Amount3Options>(PropertyNames.Amount3, Amount3Options.Amount3Option3, false));
-            props.Add(new Int32Property(PropertyNames.Amount4, ColorBgra.ToOpaqueInt32(ColorBgra.FromBgra(EnvironmentParameters.PrimaryColor.B, EnvironmentParameters.PrimaryColor.G, EnvironmentParameters.PrimaryColor.R, 255)), 0, 0xffffff));
-            props.Add(new Int32Property(PropertyNames.Amount5, ColorBgra.ToOpaqueInt32(ColorBgra.FromBgra(EnvironmentParameters.SecondaryColor.B, EnvironmentParameters.SecondaryColor.G, EnvironmentParameters.SecondaryColor.R, 255)), 0, 0xffffff));
-            props.Add(new Int32Property(PropertyNames.Amount6, ColorBgra.ToOpaqueInt32(ColorBgra.FromBgra((byte)((EnvironmentParameters.PrimaryColor.B + EnvironmentParameters.SecondaryColor.B) / 2), (byte)((EnvironmentParameters.PrimaryColor.G + EnvironmentParameters.SecondaryColor.G) / 2), (byte)((EnvironmentParameters.PrimaryColor.R + EnvironmentParameters.SecondaryColor.R) / 2), 255)), 0, 0xffffff));
-            props.Add(new Int32Property(PropertyNames.Amount7, ColorBgra.ToOpaqueInt32(Color.White), 0, 0xffffff));
+            List<Property> props = new List<Property>
+            {
+                new Int32Property(PropertyNames.Amount1, 4, 1, 100),
+                new Int32Property(PropertyNames.Amount2, 16, 1, 100),
+                StaticListChoiceProperty.CreateForEnum<Amount3Options>(PropertyNames.Amount3, Amount3Options.Amount3Option3, false),
+                new Int32Property(PropertyNames.Amount4, ColorBgra.ToOpaqueInt32(ColorBgra.FromBgra(EnvironmentParameters.PrimaryColor.B, EnvironmentParameters.PrimaryColor.G, EnvironmentParameters.PrimaryColor.R, 255)), 0, 0xffffff),
+                new Int32Property(PropertyNames.Amount5, ColorBgra.ToOpaqueInt32(ColorBgra.FromBgra(EnvironmentParameters.SecondaryColor.B, EnvironmentParameters.SecondaryColor.G, EnvironmentParameters.SecondaryColor.R, 255)), 0, 0xffffff),
+                new Int32Property(PropertyNames.Amount6, ColorBgra.ToOpaqueInt32(ColorBgra.FromBgra((byte)((EnvironmentParameters.PrimaryColor.B + EnvironmentParameters.SecondaryColor.B) / 2), (byte)((EnvironmentParameters.PrimaryColor.G + EnvironmentParameters.SecondaryColor.G) / 2), (byte)((EnvironmentParameters.PrimaryColor.R + EnvironmentParameters.SecondaryColor.R) / 2), 255)), 0, 0xffffff),
+                new Int32Property(PropertyNames.Amount7, ColorBgra.ToOpaqueInt32(Color.White), 0, 0xffffff)
+            };
 
             return new PropertyCollection(props);
         }
@@ -154,7 +99,6 @@ namespace TattersallEffect
             Amount5 = ColorBgra.FromOpaqueInt32(newToken.GetProperty<Int32Property>(PropertyNames.Amount5).Value);
             Amount6 = ColorBgra.FromOpaqueInt32(newToken.GetProperty<Int32Property>(PropertyNames.Amount6).Value);
             Amount7 = ColorBgra.FromOpaqueInt32(newToken.GetProperty<Int32Property>(PropertyNames.Amount7).Value);
-
 
             Rectangle selection = EnvironmentParameters.GetSelection(srcArgs.Bounds).GetBoundsInt();
 
@@ -237,7 +181,6 @@ namespace TattersallEffect
 
                 // Draw line to screen.
                 tattersallGraphics.DrawLine(pen3, point5, point6);
-
             }
 
             // Draw Vertical Lines
@@ -272,7 +215,6 @@ namespace TattersallEffect
             tattersallSurface = Surface.CopyFromBitmap(tattersallBitmap);
             tattersallBitmap.Dispose();
 
-
             base.OnSetRenderInfo(newToken, dstArgs, srcArgs);
         }
 
@@ -285,20 +227,17 @@ namespace TattersallEffect
             }
         }
 
-        #region User Entered Code
-        #region UICode
-        int Amount1 = 4; // [1,100] Line Width
-        int Amount2 = 16; // [1,100] Line Spacing
-        byte Amount3 = 0; // Line Pattern|Solid - 33% Opacity|Solid - 66% Opacity|Diagonal Lines Up|Diagonal Lines Down|50/50 Dots
-        ColorBgra Amount4 = ColorBgra.FromBgr(0, 0, 0); // Line Color 1
-        ColorBgra Amount5 = ColorBgra.FromBgr(0, 0, 0); // Line Color 2
-        ColorBgra Amount6 = ColorBgra.FromBgr(0, 0, 0); // Line Color 3
-        ColorBgra Amount7 = ColorBgra.FromBgr(0, 0, 0); // Background Color
-        #endregion
+        private int Amount1 = 4; // [1,100] Line Width
+        private int Amount2 = 16; // [1,100] Line Spacing
+        private byte Amount3 = 0; // Line Pattern|Solid - 33% Opacity|Solid - 66% Opacity|Diagonal Lines Up|Diagonal Lines Down|50/50 Dots
+        private ColorBgra Amount4 = ColorBgra.FromBgr(0, 0, 0); // Line Color 1
+        private ColorBgra Amount5 = ColorBgra.FromBgr(0, 0, 0); // Line Color 2
+        private ColorBgra Amount6 = ColorBgra.FromBgr(0, 0, 0); // Line Color 3
+        private ColorBgra Amount7 = ColorBgra.FromBgr(0, 0, 0); // Background Color
 
-        Surface tattersallSurface;
+        private Surface tattersallSurface;
 
-        void Render(Surface dst, Surface src, Rectangle rect)
+        private void Render(Surface dst, Surface src, Rectangle rect)
         {
             Rectangle selection = EnvironmentParameters.GetSelection(src.Bounds).GetBoundsInt();
 
@@ -311,7 +250,5 @@ namespace TattersallEffect
                 }
             }
         }
-
-        #endregion
     }
 }
